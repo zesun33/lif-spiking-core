@@ -113,3 +113,16 @@ pytest -v tests/test_lif_router_2d.py
 # 4. Run 4-Core 2D Mesh SoC Suite
 pytest -v tests/test_lif_mesh_2x2.py
 ```
+
+---
+
+## 5. Physical ASIC Tapeout & Implementation Metrics (Nangate45)
+
+All three hierarchical levels of the neuromorphic architecture have been synthesized with Yosys and placed, routed, and timing-closed with OpenROAD on the **Nangate45 Open Cell Library**:
+
+| Hierarchy / Design Module | Standard Cell Count | Die Dimensions ($\mu\text{m}$) | Core Area ($\mu\text{m}^2$) | Utilization | Clock Target | Timing Slack ($WNS$) | Max Frequency | Tapeout Artifact |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **`lif_tile_8x8`** (Core Tile) | 8,951 | $197.7 \times 197.7$ | $39,085$ | 45.0% | 100 MHz (10 ns) | **+5.27 ns** | **211.4 MHz** | `lif_tile_8x8.routed.def` |
+| **`lif_router_2d`** (5-Port NoC Router) | 1,862 | $112.5 \times 112.5$ | $12,656$ | 45.0% | 100 MHz (10 ns) | **+7.85 ns** | **465.1 MHz** | `lif_router_2d.routed.def` |
+| **`lif_mesh_2x2`** (4-Core SoC) | 32,351 | $756.6 \times 756.6$ | $483,677$ | 45.1% | 100 MHz (10 ns) | **+7.12 ns** | **347.2 MHz** | `lif_mesh_2x2.routed.def` |
+

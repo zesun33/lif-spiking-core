@@ -208,6 +208,9 @@ module lif_router_2d #(
     reg [2:0] granted_src [0:4];
     reg       has_grant   [0:4];
 
+    reg [2:0] cand_src;
+    reg [3:0] cand_sum;
+
     integer ep, ip;
     always @(*) begin
         // Default assignments
@@ -227,7 +230,9 @@ module lif_router_2d #(
             // Round-robin search starting from rr_priority[ep]
             for (ip = 0; ip < 5; ip = ip + 1) begin
                 if (!has_grant[ep]) begin
-                    case ((rr_priority[ep] + ip[2:0]) % 5)
+                    cand_sum = {1'b0, rr_priority[ep]} + ip[3:0];
+                    cand_src = (cand_sum >= 4'd5) ? (cand_sum[2:0] - 3'd5) : cand_sum[2:0];
+                    case (cand_src)
                         3'd0: if (request[0] && (target_port[0] == ep[2:0])) begin has_grant[ep] = 1'b1; granted_src[ep] = 3'd0; end
                         3'd1: if (request[1] && (target_port[1] == ep[2:0])) begin has_grant[ep] = 1'b1; granted_src[ep] = 3'd1; end
                         3'd2: if (request[2] && (target_port[2] == ep[2:0])) begin has_grant[ep] = 1'b1; granted_src[ep] = 3'd2; end

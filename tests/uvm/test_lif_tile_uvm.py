@@ -10,14 +10,24 @@ from pyuvm import (
     uvm_root,
     ConfigDB
 )
-from tests.uvm.lif_driver import LifTileDriver
-from tests.uvm.lif_monitor import LifTileMonitor
-from tests.uvm.lif_scoreboard import LifTileScoreboard
-from tests.uvm.lif_sequences import (
-    TileConfigSequence,
-    PoissonCRVSequence,
-    DirectedCornerCoverageSequence
-)
+try:
+    from hw_verification.vip.lif import (
+        LifTileDriver,
+        LifTileMonitor,
+        LifTileScoreboard,
+        TileConfigSequence,
+        PoissonCRVSequence,
+        DirectedCornerCoverageSequence,
+    )
+except ImportError:
+    from tests.uvm.lif_driver import LifTileDriver
+    from tests.uvm.lif_monitor import LifTileMonitor
+    from tests.uvm.lif_scoreboard import LifTileScoreboard
+    from tests.uvm.lif_sequences import (
+        TileConfigSequence,
+        PoissonCRVSequence,
+        DirectedCornerCoverageSequence,
+    )
 
 
 class LifTileEnv(uvm_env):

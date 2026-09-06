@@ -78,7 +78,7 @@ module lif_neuron #(
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            v_mem      <= v_rest;
+            v_mem      <= {WIDTH{1'b0}};
             spike_out  <= 1'b0;
             refrac_cnt <= 4'd0;
         end else begin

@@ -34,12 +34,12 @@ async def test_lif_leaky_decay(dut):
     dut.synaptic_weight.value = 0
 
     # Cycle 1 after injection: v_mem should be exactly 800
-    v1 = int(dut.v_mem.value.signed_integer)
+    v1 = int(dut.v_mem.value.to_signed())
     assert v1 == 800, f"Expected 800, got {v1}"
 
     # Cycle 2: Leave timestep_tick = 0. Membrane MUST hold charge without decaying!
     await FallingEdge(dut.clk)
-    v2 = int(dut.v_mem.value.signed_integer)
+    v2 = int(dut.v_mem.value.to_signed())
     assert v2 == 800, f"Charge leaked without timestep_tick! Expected 800, got {v2}"
 
     # Cycle 3: Fire timestep_tick strobe (1 cycle pulse). Now decay occurs!
@@ -47,7 +47,7 @@ async def test_lif_leaky_decay(dut):
     dut.timestep_tick.value = 1
     await FallingEdge(dut.clk)
     dut.timestep_tick.value = 0
-    v3 = int(dut.v_mem.value.signed_integer)
+    v3 = int(dut.v_mem.value.to_signed())
     assert v3 == 700, f"Leak decay failed on timestep_tick: expected 700, got {v3}"
 
     # Cycle 4: Second timestep_tick strobe.
@@ -55,7 +55,7 @@ async def test_lif_leaky_decay(dut):
     dut.timestep_tick.value = 1
     await FallingEdge(dut.clk)
     dut.timestep_tick.value = 0
-    v4 = int(dut.v_mem.value.signed_integer)
+    v4 = int(dut.v_mem.value.to_signed())
     assert v4 == 613, f"Second leak decay failed: expected 613, got {v4}"
 
 
@@ -84,7 +84,7 @@ async def test_lif_threshold_firing_and_subtractive_reset(dut):
     dut.synaptic_weight.value = 0
 
     # Intra-cycle check: Membrane is 1200, but neuron MUST NOT fire until timestep_tick arrives!
-    assert int(dut.v_mem.value.signed_integer) == 1200
+    assert int(dut.v_mem.value.to_signed()) == 1200
     assert int(dut.spike_out.value) == 0, "Spike fired prematurely before timestep_tick!"
 
     # Now assert timestep_tick. Decay applies to 1200: 1200 - 150 = 1050.
@@ -94,7 +94,7 @@ async def test_lif_threshold_firing_and_subtractive_reset(dut):
     dut.timestep_tick.value = 0
 
     assert int(dut.spike_out.value) == 1, "Neuron failed to emit spike on timestep_tick!"
-    v_post = int(dut.v_mem.value.signed_integer)
+    v_post = int(dut.v_mem.value.to_signed())
     assert v_post == 50, f"Subtractive reset failed: expected 50 mV residual, got {v_post}"
     assert int(dut.in_refractory.value) == 1, "Neuron should be in refractory state after firing"
 
@@ -168,5 +168,5 @@ async def test_lif_lower_bound_clamping(dut):
     dut.spike_in_valid.value = 0
 
     # Membrane must NOT be negative; must be clamped at v_rest (0)
-    v_mem = int(dut.v_mem.value.signed_integer)
+    v_mem = int(dut.v_mem.value.to_signed())
     assert v_mem == 0, f"Lower bound clamping failed: expected 0, got {v_mem}"

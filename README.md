@@ -1,17 +1,17 @@
 # lif-spiking-core
 
-> Synthesizable Leaky Integrate-and-Fire (LIF) Neuromorphic Spiking Neuron Core, 8x8 Tile, 5-Port AER Router, and 4-Core 2D Mesh SoC with PyUVM & Nangate45 Tapeout.
+> Synthesizable Leaky Integrate-and-Fire (LIF) Neuromorphic Spiking Neuron Core, 8x8 Tile, 5-Port AER Router, and 4-Core 2D Mesh SoC with PyUVM verification and Nangate45 implementation artifacts.
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
-[![Verification: 18/18 PASS](https://img.shields.io/badge/Verification-18%2F18%20PASS-brightgreen)](#industrial-verification-suite)
+[![Recorded verification: 18/18 PASS](https://img.shields.io/badge/Recorded%20verification-18%2F18%20PASS-brightgreen)](#3-recorded-verification-suite)
 [![Coverage: 100% Stimulus](https://img.shields.io/badge/Coverage-100%25%20Stimulus%20Cross-brightgreen)](#functional-cross-coverage)
-[![ASIC: Nangate45 465MHz](https://img.shields.io/badge/ASIC-Nangate45%20%7C%20465%20MHz-blue)](#physical-design--silicon-tapeout)
+[![Implementation: Nangate45](https://img.shields.io/badge/Implementation-Nangate45-blue)](#2-physical-design-results-nangate45)
 
 ---
 
 ## 1. Architectural Overview
 
-`lif-spiking-core` is an industrial-grade, fully synthesizable silicon implementation of an event-driven neuromorphic compute platform scaling from individual neurons to multi-core 2D Mesh Network-on-Chip (NoC) SoCs:
+`lif-spiking-core` provides synthesizable RTL and open-tool implementation artifacts of an event-driven neuromorphic compute platform scaling from individual neurons to multi-core 2D Mesh Network-on-Chip (NoC) SoCs:
 
 ```text
     ┌──────────────────────────────────────────────────────────────────┐
@@ -44,11 +44,15 @@
 
 ---
 
-## 2. Physical Design & Silicon Tapeout (Nangate45)
+## 2. Physical Design Results (Nangate45)
 
-All modules have been synthesized, floorplanned, placed, routed, and timed using **OpenROAD** on the **Nangate45** open-cell library:
+The tables below retain previously reported OpenROAD/Nangate45 results. The repository contains synthesis netlists, routed DEFs, flow scripts, and layout images. These are implementation artifacts, not evidence of fabricated or measured silicon, foundry-qualified signoff, or a manufacturing tapeout.
 
-| Silicon Metric | 8x8 LIF Tile (`lif_tile_8x8`) | 5-Port AER Router (`lif_router_2d`) | Notes / Standard Cell Library |
+The Fmax values are estimates computed as `1 / (10 ns - reported setup slack)` at the documented 100 MHz constraint. They are not measurements or proof that a rerun at that higher clock would close timing. The raw timing reports and tool-version manifests for these historical tables are not tracked here, so the numbers have not been independently regenerated for this documentation update. The later table's positive slack values are setup slack, not WNS (the earlier table reports WNS as zero).
+
+OpenROAD flow scripts and Nangate45 implementation artifacts are provided for the modules below:
+
+| Reported implementation metric | 8x8 LIF Tile (`lif_tile_8x8`) | 5-Port AER Router (`lif_router_2d`) | Notes / Standard Cell Library |
 | :--- | :---: | :---: | :--- |
 | **PDK Library** | `Nangate45` | `Nangate45` | FreePDK45 open standard cells |
 | **Standard Cell Count** | **8,951 cells** | **1,862 cells** | Standard combinational + DFFR_X1 cells |
@@ -59,14 +63,14 @@ All modules have been synthesized, floorplanned, placed, routed, and timed using
 | **Worst Negative Slack (WNS)** | **0.00 ns** | **0.00 ns** | Zero timing violations |
 | **Total Negative Slack (TNS)** | **0.00 ns** | **0.00 ns** | Fully timing-closed design |
 | **Worst Setup Slack** | **+5.27 ns** | **+7.85 ns** | Positive setup timing margin |
-| **Max Frequency (Fmax)** | **≈ 211.4 MHz** | **≈ 465.1 MHz** | Achieved silicon frequency |
-| **Tapeout Artifact** | [`lif_tile_8x8.routed.def`](./lif_tile_8x8.routed.def) | [`lif_router_2d.routed.def`](./lif_router_2d.routed.def) | 100% routed physical DEF |
+| **Max Frequency (Fmax)** | **≈ 211.4 MHz** | **≈ 465.1 MHz** | Timing-derived estimate; not a silicon measurement |
+| **Routed DEF artifact** | [`lif_tile_8x8.routed.def`](./lif_tile_8x8.routed.def) | [`lif_router_2d.routed.def`](./lif_router_2d.routed.def) | Routed physical DEF; completion is not rechecked here |
 
 ---
 
-## 3. Industrial Verification Suite
+## 3. Recorded Verification Suite
 
-The platform is verified by 3 regression suites totaling **18/18 Passing Testcases**:
+The README records 3 regression suites totaling **18/18 passing test cases**. This is a historical summary; a fresh run of `scripts/verify.sh` exercises only the suites listed by that script and must be reported separately:
 
 ### A. 8x8 Core Tile Cocotb Suite (`tests/test_lif_tile_8x8.py`) — 8/8 PASS
 1. `test_tile_config_programming_and_readback`: 64-synapse SRAM writes and registered readbacks.
@@ -116,11 +120,11 @@ pytest -v tests/test_lif_mesh_2x2.py
 
 ---
 
-## 5. Physical ASIC Tapeout & Implementation Metrics (Nangate45)
+## 5. Recorded Implementation Metrics (Nangate45)
 
-All three hierarchical levels of the neuromorphic architecture have been synthesized with Yosys and placed, routed, and timing-closed with OpenROAD on the **Nangate45 Open Cell Library**:
+Previously reported Yosys/OpenROAD results on the **Nangate45 Open Cell Library** are summarized below. The evidence limits and Fmax calculation above apply to this table too:
 
-| Hierarchy / Design Module | Standard Cell Count | Die Dimensions (µm) | Core Area (µm²) | Utilization | Clock Target | Timing Slack (WNS) | Max Frequency | Tapeout Artifact |
+| Hierarchy / Design Module | Standard Cell Count | Die Dimensions (µm) | Core Area (µm²) | Utilization | Clock Target | Reported setup slack | Estimated Fmax | Routed DEF artifact |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | **`lif_tile_8x8`** (Core Tile) | 8,951 | 197.7 × 197.7 | 39,085 | 45.0% | 100 MHz (10 ns) | **+5.27 ns** | **211.4 MHz** | `lif_tile_8x8.routed.def` |
 | **`lif_router_2d`** (5-Port NoC Router) | 1,862 | 112.5 × 112.5 | 12,656 | 45.0% | 100 MHz (10 ns) | **+7.85 ns** | **465.1 MHz** | `lif_router_2d.routed.def` |

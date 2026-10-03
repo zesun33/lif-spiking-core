@@ -4,7 +4,7 @@
 # Follows the standard portfolio verification standard.
 # Usage:
 #   ./scripts/verify.sh              # full verification
-#   ./scripts/verify.sh --quick      # quick spec + syntax + tapeout checks
+#   ./scripts/verify.sh --quick      # quick spec + syntax + implementation checks
 #   ./scripts/verify.sh --gate N     # run only gate N
 
 set -euo pipefail
@@ -29,7 +29,7 @@ verify.sh — lif-spiking-core verification suite
                    2  verilog syntax & compilation
                    3  unit cocotb regressions
                    4  pyuvm system verification & coverage
-                   5  physical tapeout artifact signoff
+                   5  implementation artifact presence
                    6  docs verification
 EOHELP
       exit 0
@@ -77,7 +77,7 @@ iverilog -g2012 -t null rtl/lif_neuron.v rtl/lif_tile_8x8.v rtl/lif_router_2d.v 
 run_gate_3() {
   echo "--- Gate 3: Unit Cocotb Regressions ---"
   if [ "${QUICK}" = "1" ]; then
-    pass 3 "Unit cocotb regressions skipped (--quick)"
+    echo "[SKIP] Gate 3: Unit cocotb regressions (--quick)"
     return 0
   fi
   if command -v podman >/dev/null 2>&1; then
@@ -94,6 +94,8 @@ make -f .Makefile.neuron clean >/dev/null 2>&1
 make -f .Makefile.neuron > /tmp/neuron_sim.log 2>&1 || { cat /tmp/neuron_sim.log; rm -f .Makefile.neuron; exit 1; }
 rm -f .Makefile.neuron
 ' || fail 3 "Neuron unit cocotb simulation failed"
+  else
+    fail 3 "podman required to execute this cocotb regression"
   fi
   pass 3 "Unit Cocotb testbenches passed (leaky decay, subtractive reset, refractory)"
 }
@@ -101,7 +103,7 @@ rm -f .Makefile.neuron
 run_gate_4() {
   echo "--- Gate 4: PyUVM System Verification & Functional Coverage ---"
   if [ "${QUICK}" = "1" ]; then
-    pass 4 "PyUVM verification skipped (--quick)"
+    echo "[SKIP] Gate 4: PyUVM verification (--quick)"
     return 0
   fi
   if command -v podman >/dev/null 2>&1; then
@@ -118,12 +120,14 @@ make -f .Makefile.uvm clean >/dev/null 2>&1
 make -f .Makefile.uvm > /tmp/tile_uvm.log 2>&1 || { cat /tmp/tile_uvm.log; rm -f .Makefile.uvm; exit 1; }
 rm -f .Makefile.uvm
 ' || fail 4 "Tile PyUVM simulation failed"
+  else
+    fail 4 "podman required to execute this PyUVM regression"
   fi
-  pass 4 "PyUVM 8x8 tile verified with 100% protocol and functional coverage closure"
+  pass 4 "PyUVM tile simulation completed; inspect its report for per-bin coverage"
 }
 
 run_gate_5() {
-  echo "--- Gate 5: Physical Tapeout Artifact Signoff ---"
+  echo "--- Gate 5: Implementation Artifact Presence ---"
   test -f lif_mesh_2x2.routed.def || fail 5 "lif_mesh_2x2.routed.def missing"
   test -f lif_mesh_2x2.gate.v || fail 5 "lif_mesh_2x2.gate.v missing"
   test -f lif_tile_8x8.routed.def || fail 5 "lif_tile_8x8.routed.def missing"
@@ -138,7 +142,7 @@ run_gate_5() {
       fail 5 "Artifact $f is suspiciously small ($SZ bytes)"
     fi
   done
-  pass 5 "Complete Nangate45 physical tapeout artifacts verified (.gate.v & .routed.def)"
+  pass 5 "Nangate45 netlist/DEF artifacts present and above minimum size; timing/DRC/LVS not rerun (.gate.v & .routed.def)"
 }
 
 run_gate_6() {
@@ -146,7 +150,7 @@ run_gate_6() {
   test -f README.md || fail 6 "README.md missing"
   grep -qi "2x2 neuromorphic mesh" README.md || fail 6 "README missing 2x2 mesh summary"
   grep -qi "Physical Design" README.md || fail 6 "README missing physical layout docs"
-  pass 6 "Documentation complete with physical tapeout & architectural specs"
+  pass 6 "Documentation complete with physical implementation & architectural specs"
 }
 
 case "${GATE}" in
@@ -164,7 +168,7 @@ case "${GATE}" in
     run_gate_5
     run_gate_6
     echo ""
-    echo -e "\033[0;32m=== All Gates Cleared: lif-spiking-core Verified ===\033[0m"
+    echo -e "\033[0;32m=== lif-spiking-core checks complete; skipped gates are listed above ===\033[0m"
     ;;
   *)
     fail "?" "Unknown gate: ${GATE}"

@@ -1,10 +1,12 @@
-# Industrial Verification & Sign-off Report: LIF 8x8 Neuromorphic Core Tile
+# Recorded Verification Report: LIF 8x8 Neuromorphic Core Tile
+
+This document preserves recorded simulation outcomes and coverage values. It is not a fresh regression result or physical signoff certificate. Assertion examples below describe monitored properties; they do not establish formal proof coverage. See the README for implementation evidence limits.
 
 ## 1. Verification Strategy & Methodologies
 
-The verification plan for `lif_tile_8x8` was architected to meet commercial ASIC pre-silicon sign-off requirements:
+The verification plan for `lif_tile_8x8` covers the following RTL behaviors:
 1. **Mathematical Accuracy**: Cycle-accurate bit-level equivalence against a Python golden reference model (`tests/golden_lif_model.py`).
-2. **Constrained-Random Verification (CRV)**: Formal stimulus generation under varying Poisson arrival processes.
+2. **Constrained-Random Verification (CRV)**: Random stimulus generation under varying Poisson arrival processes; this is simulation, not a formal proof.
 3. **Protocol Invariants & SVA Assertions**: Temporal checking of safety properties across clock boundaries.
 4. **Functional Cross-Coverage Closure**: Quantitative tracking of multi-dimensional corner states.
 
@@ -69,4 +71,4 @@ Functional Coverage Breakdown:
 ======================================================================
 ```
 
-**Pre-Silicon Sign-off Conclusion**: The $8 \times 8$ Neuromorphic Core Tile satisfies all architectural, functional, timing, and protocol constraints, clearing the engineering gates for physical tapeout.
+**Recorded simulation conclusion**: The listed 9 tests passed in the recorded run. The listed stimulus bins reached 100%, while output-state coverage remains partial (25% for the reported cross). These results cover the exercised RTL behaviors; they do not establish complete verification, timing closure, or manufacturing readiness.

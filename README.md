@@ -1,10 +1,31 @@
 # lif-spiking-core
 
+<!-- BEGIN GENERATED PROJECT GUIDE -->
+
+## Purpose and first steps
+
+Study and simulate LIF neuron tiles, AER routing, and a 2x2 neuromorphic mesh.
+
+**Who it is for:** RTL and neuromorphic-computing developers studying event-driven neuron tiles and routing.
+
+**First task:** Read the architecture, then follow the neuron/tile testbench paths and verification notes.
+
+**What to expect:** LIF neuron/tile/router RTL, reference models, simulation tests, and recorded implementation artifacts.
+
+**Current scope:** Implemented RTL and testbenches with historical results. Coverage is partial; implementation artifacts and timing estimates are not measurements of fabricated silicon.
+
+**Start here:** [Architecture overview](ARCHITECTURE.md).
+
+**Related projects:** [hw-verification-suite](https://github.com/zesun33/hw-verification-suite), [mcp-cocotb](https://github.com/zesun33/mcp-cocotb), [rust-systems-track](https://github.com/zesun33/personal-projects/tree/main/rust-systems-track).
+
+[Choose another project](https://github.com/zesun33/personal-projects/blob/main/GETTING_STARTED.md).
+<!-- END GENERATED PROJECT GUIDE -->
+
 > Synthesizable Leaky Integrate-and-Fire (LIF) Neuromorphic Spiking Neuron Core, 8x8 Tile, 5-Port AER Router, and 4-Core 2D Mesh SoC with PyUVM verification and Nangate45 implementation artifacts.
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 [![Recorded verification: 18/18 PASS](https://img.shields.io/badge/Recorded%20verification-18%2F18%20PASS-brightgreen)](#3-recorded-verification-suite)
-[![Coverage: 100% Stimulus](https://img.shields.io/badge/Coverage-100%25%20Stimulus%20Cross-brightgreen)](#functional-cross-coverage)
+[![Coverage: Partial](https://img.shields.io/badge/Coverage-partial-yellow)](VERIFICATION.md)
 [![Implementation: Nangate45](https://img.shields.io/badge/Implementation-Nangate45-blue)](#2-physical-design-results-nangate45)
 
 ---
